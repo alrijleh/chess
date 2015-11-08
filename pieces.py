@@ -1,48 +1,5 @@
-#Contains classes for pieces and board
-
-class Board(object):
-
-    def __init__ (self):
-        self.matrix = [['empty' for x in range(8)] for y in range(8)]
-        self.white = []
-        self.black = []
-        self.captured = []
-
-    def __getitem__(self, index):
-        if (index < 0): return 'invalid'
-        if (index > 7): return 'invalid'
-        return self.matrix[index]
-
-    def draw(self):
-        width = 8*3 + 8 + 1
-        hieght = 8 + 9
-        line = '\n' + '_' * width + '\n'
-        output = line
-        for y in range(7,-1,-1):
-            output += '|'
-            for x in range(8):
-                target = self.matrix[x][y]
-                #if space is empty
-                if type(target) is str:
-                    output += '   '
-                #if occupied by piece
-                else:
-                    #print color
-                    if target.color == 'white': output += 'w '
-                    elif target.color == 'black': output += 'b '
-                    #print piece type
-                    if target.type == 'king': output += 'K'
-                    if target.type == 'queen': output += 'Q'
-                    if target.type == 'rook': output += 'R'
-                    if target.type == 'bishop': output += 'B'
-                    if target.type == 'knight': output += 'N'
-                    if target.type == 'pawn': output += 'P'
-                output += '|'
-            output += line
-        print(output)
-
-
-
+#pieces.py
+#Contains definitions of chess pieces and functions to generate and execute moves
 
 #abstract class for chess piece
 class Piece(object):
@@ -233,11 +190,4 @@ class King(Piece):
                         self.moves.append( location )
                     elif target.color != self.color:
                         self.moves.append( location )
-
-
-#test area
-board = Board()
-knight = Knight(board, 2,3,'white')
-pawn = Pawn(board, 1, 1, 'white')
-black = Pawn(board, 3, 1, 'black')
 
