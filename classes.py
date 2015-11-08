@@ -93,7 +93,7 @@ class Pawn(Piece):
             if str( self.board[self.x+1][self.y+1]) == 'black':
                 self.moves.append( (self.x+1, self.y+1) )
             if str( self.board[self.x-1][self.y+1]) == 'black':
-                self.moves.append( (self.x+1, self.y+1) )
+                self.moves.append( (self.x-1, self.y+1) )
 
         elif self.color == 'black':
             #walk forwards
@@ -106,7 +106,7 @@ class Pawn(Piece):
             if str( self.board[self.x+1][self.y-1]) == 'white':
                 self.moves.append( (self.x+1, self.y-1) )
             if str( self.board[self.x-1][self.y-1]) == 'white':
-                self.moves.append( (self.x11, self.y-1) )
+                self.moves.append( (self.x-1, self.y-1) )
 
 class Rook(Piece):
 
@@ -115,17 +115,60 @@ class Rook(Piece):
         self.type = 'rook'
 
     def gen_moves(self):
+        self.moves.clear()
         #postive horizantal
-        x = self.x
+        x = self.x + 1
         while (x < 8):
-            x += 1
             target = self.board[x][self.y]
-
-
+            if str(target) == 'empty':
+                self.moves.append( (x, self.y) )
+            elif target.color != self.color:
+                self.moves.append( (x, self.y) )
+                break
+            elif target.color == self.color:
+                break
+            x += 1
+        #negative horizantal
+        x = self.x - 1
+        while (x >= 0):
+            target = self.board[x][self.y]
+            if str(target) == 'empty':
+                self.moves.append( (x, self.y) )
+            elif target.color != self.color:
+                self.moves.append( (x, self.y) )
+                break
+            elif target.color == self.color:
+                break
+            x -= 1
+        #postive vertical
+        y = self.y + 1
+        while (y < 8):
+            target = self.board[self.x][y]
+            if str(target) == 'empty':
+                self.moves.append( (self.x, y) )
+            elif target.color != self.color:
+                self.moves.append( (self.x, y) )
+                break
+            elif target.color == self.color:
+                break
+            y += 1
+        #negative vertical
+        y = self.y - 1
+        while (y >= 0):
+            target = self.board[self.x][y]
+            if str(target) == 'empty':
+                self.moves.append( (self.x, y) )
+            elif target.color != self.color:
+                self.moves.append( (self.x, y) )
+                break
+            elif target.color == self.color:
+                break
+            y -= 1
 
 
 #test area
 board = Board()
-pawn = Pawn(board, 2, 1, 'white')
-black = Pawn(board, 3, 2, 'black')
+rook = Rook(board, 0,0,'white')
+pawn = Pawn(board, 0, 2, 'white')
+black = Pawn(board, 3, 0, 'black')
 pawn.gen_moves()
