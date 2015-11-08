@@ -155,20 +155,19 @@ class Bishop(Piece):
         x = 0
         y = 1
         self.moves.clear()
-        for y_offset in [-1,0,1]:
-            for x_offset in [-1,0,1]:
-                if (x_offset + y_offset) % 2 == 0: #both coordinates are changing
-                    location = (self.x + x_offset, self.y + y_offset)
-                    while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                        target = self.board[location[x]][location[y]]
-                        if str(target) == 'empty':
-                            self.moves.append( location )
-                        elif target.color != self.color:
-                            self.moves.append( location )
-                            break
-                        elif target.color == self.color:
-                            break
-                        location = (location[x] + x_offset, location[y] + y_offset)
+        for y_offset in [-1,1]:
+            for x_offset in [-1,1]:
+                location = (self.x + x_offset, self.y + y_offset)
+                while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
+                    target = self.board[location[x]][location[y]]
+                    if str(target) == 'empty':
+                        self.moves.append( location )
+                    elif target.color != self.color:
+                        self.moves.append( location )
+                        break
+                    elif target.color == self.color:
+                        break
+                    location = (location[x] + x_offset, location[y] + y_offset)
 
 class Queen(Piece):
 
@@ -194,12 +193,32 @@ class Queen(Piece):
                         break
                     location = (location[x] + x_offset, location[y] + y_offset)
 
+class Knight(Piece):
+
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.type = 'knight'
+
+    def gen_moves(self):
+        x = 0
+        y = 1
+        self.moves.clear()
+        for y_offset in [-2,-1,1,2]:
+            for x_offset in [-2,-1,1,2]:
+                if (x_offset + y_offset) % 2 != 0: #movement must be 2,1 or 1,2
+                    location = (self.x + x_offset, self.y + y_offset)
+                    if (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
+                        target = self.board[location[x]][location[y]]
+                        if str(target) == 'empty':
+                            self.moves.append( location )
+                        elif target.color != self.color:
+                            self.moves.append( location )
 
 
 
 #test area
 board = Board()
-queen = Queen(board, 2,2,'white')
+knight = Knight(board, 2,3,'white')
 pawn = Pawn(board, 1, 1, 'white')
 black = Pawn(board, 3, 1, 'black')
 
