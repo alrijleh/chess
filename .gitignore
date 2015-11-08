@@ -1,4 +1,7 @@
-# gitignore
+# .gitignore
 # vim swap files
 *.swp
+
+#pycache
 __pycach__/
+*.pyc
