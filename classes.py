@@ -214,6 +214,25 @@ class Knight(Piece):
                         elif target.color != self.color:
                             self.moves.append( location )
 
+class King(Piece):
+
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.type = 'king'
+
+    def gen_moves(self):
+        x = 0
+        y = 1
+        self.moves.clear()
+        for y_offset in [-1,0,1]:
+            for x_offset in [-1,0,1]:
+                location = (self.x + x_offset, self.y + y_offset)
+                if (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
+                    target = self.board[location[x]][location[y]]
+                    if str(target) == 'empty':
+                        self.moves.append( location )
+                    elif target.color != self.color:
+                        self.moves.append( location )
 
 
 #test area
