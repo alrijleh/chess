@@ -54,7 +54,7 @@ class Piece(object):
         self.moves = []
         self.status = 'alive'
 
-        board[x][y] = self
+        self.board[x][y] = self
     
     #calling for the string of a piece returns its color
     def __str__(self):
@@ -64,11 +64,11 @@ class Piece(object):
     def move(self, location):
         x = 0
         y = 1
-        origin = board[self.x][self.y]
-        target = board[location[x]][location[y]]
+        origin = self.board[self.x][self.y]
+        target = self.board[location[x]][location[y]]
         if ( str(target) != 'empty' ):
             target.status = 'dead'
-            board.captured.append(target)
+            self.board.captured.append(target)
         target = self
         origin = "empty"
 
@@ -82,26 +82,44 @@ class Pawn(Piece):
 
     def gen_moves(self):
         self.moves.clear()
-        if (self.color == 'white'):
+        if self.color == 'white':
             #walk forwards
-            if ( str( board[self.x][self.y+1]) == 'empty' ):
+            if str( self.board[self.x][self.y+1]) == 'empty':
                 self.moves.append( (self.x, self.y+1) )
+            #two spaces from initial location
+            if str( self.board[self.x][self.y+2]) == 'empty' and self.y == 1:
+                self.moves.append( (self.x, self.y+2) )
             #diagonal attacks
-            if ( str( board[self.x+1][self.y+1]) == 'black' ):
+            if str( self.board[self.x+1][self.y+1]) == 'black':
                 self.moves.append( (self.x+1, self.y+1) )
-            if ( str( board[self.x-1][self.y+1]) == 'black' ):
+            if str( self.board[self.x-1][self.y+1]) == 'black':
                 self.moves.append( (self.x+1, self.y+1) )
 
-        elif (self.color == 'black'):
+        elif self.color == 'black':
             #walk forwards
-            if ( str( board[self.x][self.y-1]) == 'empty' ):
+            if str( self.board[self.x][self.y-1]) == 'empty':
                 self.moves.append( (self.x, self.y-1) )
+            #two spaces from initial location
+            if str( self.board[self.x][self.y-2]) == 'empty' and self.y == 6:
+                self.moves.append( (self.x, self.y-2) )
             #diagonal attacks
-            if ( str( oard[self.x+1][self.y-1]) == 'white' ):
+            if str( self.board[self.x+1][self.y-1]) == 'white':
                 self.moves.append( (self.x+1, self.y-1) )
-            if ( str( oard[self.x-1][self.y-1]) == 'white' ):
+            if str( self.board[self.x-1][self.y-1]) == 'white':
                 self.moves.append( (self.x11, self.y-1) )
 
+class Rook(Piece):
+
+    def __init__(self, board, x, y, color):
+        super().__init__(board, x, y, color)
+        self.type = 'rook'
+
+    def gen_moves(self):
+        #postive horizantal
+        x = self.x
+        while (x < 8):
+            x += 1
+            target = self.board[x][self.y]
 
 
 
