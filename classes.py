@@ -115,55 +115,24 @@ class Rook(Piece):
         self.type = 'rook'
 
     def gen_moves(self):
+        x = 0
+        y = 1
         self.moves.clear()
-        #postive horizantal
-        x = self.x + 1
-        while (x < 8):
-            target = self.board[x][self.y]
-            if str(target) == 'empty':
-                self.moves.append( (x, self.y) )
-            elif target.color != self.color:
-                self.moves.append( (x, self.y) )
-                break
-            elif target.color == self.color:
-                break
-            x += 1
-        #negative horizantal
-        x = self.x - 1
-        while (x >= 0):
-            target = self.board[x][self.y]
-            if str(target) == 'empty':
-                self.moves.append( (x, self.y) )
-            elif target.color != self.color:
-                self.moves.append( (x, self.y) )
-                break
-            elif target.color == self.color:
-                break
-            x -= 1
-        #postive vertical
-        y = self.y + 1
-        while (y < 8):
-            target = self.board[self.x][y]
-            if str(target) == 'empty':
-                self.moves.append( (self.x, y) )
-            elif target.color != self.color:
-                self.moves.append( (self.x, y) )
-                break
-            elif target.color == self.color:
-                break
-            y += 1
-        #negative vertical
-        y = self.y - 1
-        while (y >= 0):
-            target = self.board[self.x][y]
-            if str(target) == 'empty':
-                self.moves.append( (self.x, y) )
-            elif target.color != self.color:
-                self.moves.append( (self.x, y) )
-                break
-            elif target.color == self.color:
-                break
-            y -= 1
+        for y_offset in [-1,0,1]:
+            for x_offset in [-1,0,1]:
+                if (x_offset + y_offset) % 2 != 0: #only one coordinate is changing
+                    location = (self.x + x_offset, self.y + y_offset)
+                    while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
+                        target = self.board[location[x]][location[y]]
+                        if str(target) == 'empty':
+                            self.moves.append( location )
+                        elif target.color != self.color:
+                            self.moves.append( location )
+                            break
+                        elif target.color == self.color:
+                            break
+                        location = (location[x] + x_offset, location[y] + y_offset)
+
 
 
 #test area
@@ -171,4 +140,4 @@ board = Board()
 rook = Rook(board, 0,0,'white')
 pawn = Pawn(board, 0, 2, 'white')
 black = Pawn(board, 3, 0, 'black')
-pawn.gen_moves()
+rook.gen_moves()
