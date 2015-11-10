@@ -1,6 +1,9 @@
 #pieces.py
 #Contains definitions of chess pieces and functions to generate and execute moves
 
+import time
+import random
+
 #abstract class for chess piece
 class Piece(object):
 
@@ -16,10 +19,11 @@ class Piece(object):
         self.board[x][y] = self
         if color == 'white': self.board.white.append(self)
         if color == 'black': self.board.black.append(self)
+        random.seed(self,time.time())
     
     #calling for the string of a piece returns its color
     def __str__(self):
-        return self.color;
+        return self.color
 
     #move the piece to previously validated location tuple
     def move(self, location):

@@ -1,13 +1,18 @@
 #board.py
 #contains chess board and structures containing pieces
 
+import random
+import time
+
 class Board(object):
 
     def __init__ (self):
-        self.matrix = [['empty' for x in range(8)] for y in range(8)]
-        self.white = []
-        self.black = []
-        self.captured = []
+        self.matrix = [['empty' for x in range(8)] for y in range(8)] #physical board
+        self.white = [] #contains all living white pieces
+        self.black = [] #contains all living black pieces
+        self.captured = [] #contains all captured pieces
+
+        random.seed(self,time.time()) #generate random seed
 
     def __getitem__(self, index):
         if (index < 0): return 'invalid'

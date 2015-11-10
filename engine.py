@@ -27,3 +27,7 @@ for color in ['white', 'black']:
     King(board, 4, y, color)
 
 
+#piece = board.random_piece('white')
+#move = piece.random_move()
+#piece.move(move)
+#board.draw()
