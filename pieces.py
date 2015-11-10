@@ -8,24 +8,28 @@ import random
 class Piece(object):
 
     def __init__(self, board, x, y, color):
-        self.board = board #board on which the piece will be placed
+        self.board = board
         self.x = x
         self.y = y
         self.color = color
         self.type = 'unassigned'
         self.moves = []
-        self.status = 'alive'
+        self.alive = True
+        self.touched = False
+        self.error = ''
 
+        #update the board with the new piece
         self.board[x][y] = self
         if color == 'white': self.board.white.append(self)
         if color == 'black': self.board.black.append(self)
+
         random.seed(self,time.time())
     
     #calling for the string of a piece returns its color
     def __str__(self):
         return self.color
 
-    #move the piece to previously validated location tuple
+    #move self to previously validated location tuple
     def move(self, location):
         x = 0
         y = 1
@@ -33,13 +37,14 @@ class Piece(object):
         target = self.board[location[x]][location[y]]
         if origin is target: raise ValueError('Cannot move a piece to itself', self.color, self.type, location[x], location[y])
         if ( str(target) != 'empty' ):
-            target.status = 'dead'
+            target.alive = False
             self.board.captured.append(target)
             try:
                 self.board.white.remove(target)
                 self.board.black.remove(target)
             except ValueError:
                 pass
+        self.touched = True
         self.board[location[x]][location[y]] = origin
         self.board[self.x][self.y] = 'empty'
         self.x = location[x]
@@ -60,7 +65,7 @@ class Pawn(Piece):
             if str( self.board[self.x][self.y+1]) == 'empty':
                 self.moves.append( (self.x, self.y+1) )
             #two spaces from initial location
-            if str( self.board[self.x][self.y+2]) == 'empty' and self.y == 1:
+            if str( self.board[self.x][self.y+2]) == 'empty' and not self.touched:
                 self.moves.append( (self.x, self.y+2) )
             #diagonal attacks
             if str( self.board[self.x+1][self.y+1]) == 'black':
@@ -73,7 +78,7 @@ class Pawn(Piece):
             if str( self.board[self.x][self.y-1]) == 'empty':
                 self.moves.append( (self.x, self.y-1) )
             #two spaces from initial location
-            if str( self.board[self.x][self.y-2]) == 'empty' and self.y == 6:
+            if str( self.board[self.x][self.y-2]) == 'empty' and self.touched:
                 self.moves.append( (self.x, self.y-2) )
             #diagonal attacks
             if str( self.board[self.x+1][self.y-1]) == 'white':
