@@ -36,17 +36,18 @@ class Piece(object):
         origin = self.board[self.x][self.y]
         target = self.board[location[x]][location[y]]
         if origin is target: raise ValueError('Cannot move a piece to itself', self.color, self.type, location[x], location[y])
+
+        #update board data
         if ( str(target) != 'empty' ):
             target.alive = False
             self.board.captured.append(target)
-            try:
-                self.board.white.remove(target)
-                self.board.black.remove(target)
-            except ValueError:
-                pass
-        self.touched = True
+            if   target in self.board.white: self.board.white.remove(target)
+            elif target in self.board.black: self.board.black.remove(target)
         self.board[location[x]][location[y]] = origin
         self.board[self.x][self.y] = 'empty'
+
+        #update self data
+        self.touched = True
         self.x = location[x]
         self.y = location[y]
 
