@@ -35,7 +35,16 @@ class Piece(object):
         y = 1
         origin = self.board[self.x][self.y]
         target = self.board[location[x]][location[y]]
-        if origin is target: raise ValueError('Cannot move a piece to itself', self.color, self.type, location[x], location[y])
+        
+        #error checking
+        if target == 'invalid':
+            error_message = 'Move destination out of range'
+            self.error += error_message
+            raise ValueError(error_message, self, location[x], location[y])
+        if origin is target:
+            error_message = 'Cannot move a piece to itself'
+            self.error += error_message
+            raise ValueError(error_message, self, location[x], location[y])
 
         #update board data
         if ( str(target) != 'empty' ):
