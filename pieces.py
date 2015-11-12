@@ -3,6 +3,7 @@
 
 import time
 import random
+import copy
 
 #abstract class for chess piece
 class Piece(object):
@@ -29,12 +30,30 @@ class Piece(object):
     def __str__(self):
         return self.color
 
+    #pick and execute a valid move
+    #recursive - needs self.moves as argument
+    #initial call should be: pick_move(self.moves)
+    def pick_move(self, move_list):
+        if move_list:
+            local_board = copy.deepcopy(self.board)
+            move = random.choice(move_list)
+            move_list.remove(move)
+            self.move(local_board, move, False)
+            if local_board.in_check(self.color):
+                pick_move(move_list)
+            else:
+                self.move(self.board, move)
+                self.board.draw()
+                return True
+        return False
+
     #move self to previously validated location tuple
-    def move(self, location):
+    #optional arguments allow function to be called without altering true data
+    def move(self, board, location, update_data=True):
         x = 0
         y = 1
-        origin = self.board[self.x][self.y]
-        target = self.board[location[x]][location[y]]
+        origin = board[self.x][self.y]
+        target = board[location[x]][location[y]]
         
         print(self)
         #error checking
@@ -51,19 +70,20 @@ class Piece(object):
             self.error += error_message
             raise ValueError(error_message, self, location[x], location[y])
 
-        #update board data
-        if ( str(target) != 'empty' ):
-            target.alive = False
-            self.board.captured.append(target)
-            if   target in self.board.white: self.board.white.remove(target)
-            elif target in self.board.black: self.board.black.remove(target)
-        self.board[location[x]][location[y]] = origin
-        self.board[self.x][self.y] = 'empty'
+        if update_data:
+            #update board data
+            if ( str(target) != 'empty' ):
+                target.alive = False
+                board.captured.append(target)
+                if   target in board.white: board.white.remove(target)
+                elif target in board.black: board.black.remove(target)
+            board[location[x]][location[y]] = origin
+            board[self.x][self.y] = 'empty'
 
-        #update self data
-        self.touched = True
-        self.x = location[x]
-        self.y = location[y]
+            #update self data
+            self.touched = True
+            self.x = location[x]
+            self.y = location[y]
 
 
 #piece classes
