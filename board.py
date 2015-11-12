@@ -3,6 +3,7 @@
 
 import random
 import time
+import copy
 
 from pieces import King
 
@@ -40,6 +41,18 @@ class Board(object):
 
         if king_location in enemy_moves: return True
         else: return False
+
+    #makes a random move for the given color
+    def make_random_move(self, color):
+        if color == 'white': friendly_pieces = copy.copy(self.white)
+        if color == 'black': friendly_pieces = copy.copy(self.black)
+
+        while (friendly_pieces):
+            piece = random.choice(friendly_pieces)
+            friendly_pieces.remove(piece)
+            if piece.pick_move(piece.moves):
+                return True
+        return False
 
 
     #returns a list of inconsistancies found in data

@@ -55,7 +55,6 @@ class Piece(object):
         origin = board[self.x][self.y]
         target = board[location[x]][location[y]]
         
-        print(self)
         #error checking
         if self == 'empty':
             error_message = 'Origin location is empty'
