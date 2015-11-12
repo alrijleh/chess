@@ -1,6 +1,8 @@
 #engine.py
 #contains implementation of the game
 
+import time
+
 from board import Board
 from pieces import King, Queen, Rook, Bishop, Knight, Pawn
 
@@ -26,8 +28,15 @@ for color in ['white', 'black']:
     Queen(board, 3, y, color)
     King(board, 4, y, color)
 
+while True:
+    null = board.in_check('black')
+    if not board.make_random_move('white'):
+        print('white cannot make a move')
+        break
+    time.sleep(3)
+    null = board.in_check('white')
+    if not board.make_random_move('black'):
+        print('black cannot make a move')
+        break
+    time.sleep(3)
 
-#piece = board.random_piece('white')
-#move = piece.random_move()
-#piece.move(move)
-#board.draw()
