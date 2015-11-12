@@ -36,7 +36,12 @@ class Piece(object):
         origin = self.board[self.x][self.y]
         target = self.board[location[x]][location[y]]
         
+        print(self)
         #error checking
+        if self == 'empty':
+            error_message = 'Origin location is empty'
+            self.error += error_message
+            raise ValueError(error_message, self, location[x], location[y])
         if target == 'invalid':
             error_message = 'Move destination out of range'
             self.error += error_message
@@ -88,7 +93,7 @@ class Pawn(Piece):
             if str( self.board[self.x][self.y-1]) == 'empty':
                 self.moves.append( (self.x, self.y-1) )
             #two spaces from initial location
-            if str( self.board[self.x][self.y-2]) == 'empty' and self.touched:
+            if str( self.board[self.x][self.y-2]) == 'empty' and not self.touched:
                 self.moves.append( (self.x, self.y-2) )
             #diagonal attacks
             if str( self.board[self.x+1][self.y-1]) == 'white':

@@ -4,6 +4,8 @@
 import random
 import time
 
+from pieces import King
+
 class Board(object):
 
     def __init__ (self):
@@ -21,17 +23,38 @@ class Board(object):
         if (index > 7): return 'invalid'
         return self.matrix[index]
 
+    #check if the given color is in check
+    def in_check(self, color):
+        if color == 'white': friendly_pieces = self.white; enemy_pieces = self.black
+        if color == 'black': friendly_pieces = self.black; enemy_pieces = self.white
+
+        king = [piece for piece in friendly_pieces if isinstance(piece, King)]
+        assert king, color + 'does not have a king'
+        king = king[0]
+        king_location = (king.x, king.y)
+        
+        enemy_moves = []
+        for piece in enemy_pieces:
+            piece.gen_moves()
+            enemy_moves.extend ( piece.moves )
+
+        if king_location in enemy_moves: return True
+        else: return False
+
+
     #returns a list of inconsistancies found in data
     def sanity_check(self):
         zombie = [piece for piece in self.white + self.black if not piece.alive]
         buried_alive = [piece for piece in self.captured if piece.alive]
         location_mismatch = [piece for piece in self.white + self.black if not self.matrix[piece.x][piece.y] == piece]
+        all_errors = zombie + buried_alive + location_mismatch
 
         for piece in zombie: piece.error += 'zombie '
         for piece in buried_alive: piece.error += 'buried_alive '
         for piece in location_mismatch: piece.error += 'location_mismatch '
 
-        self.errors = zombie+buried_alive+location_mismatch
+        self.errors = all_errors
+        assert not self.errors, all_errors
 
     #printing the board onscreen
     def draw(self):
