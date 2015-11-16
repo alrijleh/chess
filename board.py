@@ -22,10 +22,17 @@ class Board(object):
         random.seed(self,time.time()) #generate random seed
 
     #allow indexing directly into matrix
-    def __getitem__(self, index):
-        if (index < 0): return 'invalid'
-        if (index > 7): return 'invalid'
-        return self.matrix[index]
+    def __getitem__(self, location):
+        x = location[0]
+        y = location[1]
+        if (x<0 or y<0 or x>7 or y>7): return 'invalid'
+        else: return self.matrix[x][y]
+
+    def __setitem__(self, location, value):
+        x = location[0]
+        y = location[1]
+        if (x<0 or y<0 or x>7 or y>7): return 'invalid'
+        else: self.matrix[x][y] = value
 
     #check if the given color is in check
     def in_check(self, color):
@@ -33,7 +40,7 @@ class Board(object):
         if color == 'black': friendly_pieces = self.black; enemy_pieces = self.white
 
         king = [piece for piece in friendly_pieces if isinstance(piece, King)]
-        assert king, color + 'does not have a king'
+        assert king, color + ' king not found'
         king = king[0]
         king_location = (king.x, king.y)
         

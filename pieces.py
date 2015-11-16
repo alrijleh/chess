@@ -20,7 +20,7 @@ class Piece(object):
         self.error = ''
 
         #update the board with the new piece
-        self.board[x][y] = self
+        self.board[x, y] = self
         if color == 'white': self.board.white.append(self)
         if color == 'black': self.board.black.append(self)
 
@@ -36,7 +36,7 @@ class Piece(object):
     def pick_move(self, move_list):
         if move_list:
             local_board = copy.deepcopy(self.board)
-            move = random.choice(move_list)
+            move = copy.copy(random.choice(move_list))
             move_list.remove(move)
             self.move(local_board, move, False)
             if local_board.in_check(self.color):
@@ -52,8 +52,8 @@ class Piece(object):
     def move(self, board, location, commit_move=True):
         x = 0
         y = 1
-        origin = board[self.x][self.y]
-        target = board[location[x]][location[y]]
+        origin = board[self.x, self.y]
+        target = board[location[x], location[y]]
         
         #error checking
         if self == 'empty':
@@ -77,8 +77,8 @@ class Piece(object):
             if   target in board.white: board.white.remove(target)
             elif target in board.black: board.black.remove(target)
         else: capture_text = ''
-        board[location[x]][location[y]] = origin
-        board[self.x][self.y] = 'empty'
+        board[location[x], location[y]] = origin
+        board[self.x, self.y] = 'empty'
 
         if commit_move:
             #update self data
@@ -108,34 +108,34 @@ class Pawn(Piece):
         self.moves.clear()
         if self.color == 'white':
             #walk forwards
-            if str( self.board[self.x][self.y+1]) == 'empty':
+            if str( self.board[self.x, self.y+1]) == 'empty':
                 self.moves.append( (self.x, self.y+1) )
             #two spaces from initial location
             if (    not self.touched
-                    and str( self.board[self.x][self.y+1]) == 'empty'
-                    and str( self.board[self.x][self.y+2]) == 'empty'
+                    and str( self.board[self.x, self.y+1]) == 'empty'
+                    and str( self.board[self.x, self.y+2]) == 'empty'
                 ):
                 self.moves.append( (self.x, self.y+2) )
             #diagonal attacks
-            if str( self.board[self.x+1][self.y+1]) == 'black':
+            if str( self.board[self.x+1, self.y+1]) == 'black':
                 self.moves.append( (self.x+1, self.y+1) )
-            if str( self.board[self.x-1][self.y+1]) == 'black':
+            if str( self.board[self.x-1, self.y+1]) == 'black':
                 self.moves.append( (self.x-1, self.y+1) )
 
         elif self.color == 'black':
             #walk forwards
-            if str( self.board[self.x][self.y-1]) == 'empty':
+            if str( self.board[self.x, self.y-1]) == 'empty':
                 self.moves.append( (self.x, self.y-1) )
             #two spaces from initial location
             if (    not self.touched
-                    and str( self.board[self.x][self.y-1]) == 'empty'
-                    and str( self.board[self.x][self.y-2]) == 'empty'
+                    and str( self.board[self.x, self.y-1]) == 'empty'
+                    and str( self.board[self.x, self.y-2]) == 'empty'
                 ):
                 self.moves.append( (self.x, self.y-2) )
             #diagonal attacks
-            if str( self.board[self.x+1][self.y-1]) == 'white':
+            if str( self.board[self.x+1, self.y-1]) == 'white':
                 self.moves.append( (self.x+1, self.y-1) )
-            if str( self.board[self.x-1][self.y-1]) == 'white':
+            if str( self.board[self.x-1, self.y-1]) == 'white':
                 self.moves.append( (self.x-1, self.y-1) )
 
 class Rook(Piece):
@@ -153,7 +153,7 @@ class Rook(Piece):
                 if (x_offset + y_offset) % 2 != 0: #only one coordinate is changing
                     location = (self.x + x_offset, self.y + y_offset)
                     while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                        target = self.board[location[x]][location[y]]
+                        target = self.board[location[x], location[y]]
                         if str(target) == 'empty':
                             self.moves.append( location )
                         elif target.color != self.color:
@@ -177,7 +177,7 @@ class Bishop(Piece):
             for x_offset in [-1,1]:
                 location = (self.x + x_offset, self.y + y_offset)
                 while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                    target = self.board[location[x]][location[y]]
+                    target = self.board[location[x], location[y]]
                     if str(target) == 'empty':
                         self.moves.append( location )
                     elif target.color != self.color:
@@ -201,7 +201,7 @@ class Queen(Piece):
             for x_offset in [-1,0,1]:
                 location = (self.x + x_offset, self.y + y_offset)
                 while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                    target = self.board[location[x]][location[y]]
+                    target = self.board[location[x], location[y]]
                     if str(target) == 'empty':
                         self.moves.append( location )
                     elif target.color != self.color:
@@ -226,7 +226,7 @@ class Knight(Piece):
                 if (x_offset + y_offset) % 2 != 0: #movement must be 2,1 or 1,2
                     location = (self.x + x_offset, self.y + y_offset)
                     if (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                        target = self.board[location[x]][location[y]]
+                        target = self.board[location[x], location[y]]
                         if str(target) == 'empty':
                             self.moves.append( location )
                         elif target.color != self.color:
@@ -246,7 +246,7 @@ class King(Piece):
             for x_offset in [-1,0,1]:
                 location = (self.x + x_offset, self.y + y_offset)
                 if (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                    target = self.board[location[x]][location[y]]
+                    target = self.board[location[x], location[y]]
                     if str(target) == 'empty':
                         self.moves.append( location )
                     elif target.color != self.color:
