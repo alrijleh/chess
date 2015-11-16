@@ -40,7 +40,7 @@ while True:
         if board.in_check('white'): print('checkmate - black wins')
         else: print ('draw')
         break
-    time.sleep(3)
+    time.sleep(4)
 
     null = board.in_check('white')
     if board.make_random_move('black'):
@@ -49,5 +49,5 @@ while True:
         if board.in_check('black'): print('checkmate - white wins')
         else: print ('draw')
         break
-    time.sleep(3)
+    time.sleep(4)
 
