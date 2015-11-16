@@ -69,18 +69,18 @@ class Piece(object):
             self.error += error_message
             raise ValueError(error_message, self, location[x], location[y])
 
-        if commit_move:
-            #update board data
-            if ( str(target) != 'empty' ):
-                capture_text = 'x'
-                target.alive = False
-                board.captured.append(target)
-                if   target in board.white: board.white.remove(target)
-                elif target in board.black: board.black.remove(target)
-            else: capture_text = ''
-            board[location[x]][location[y]] = origin
-            board[self.x][self.y] = 'empty'
+        #update board data
+        if ( str(target) != 'empty' ):
+            capture_text = 'x'
+            target.alive = False
+            board.captured.append(target)
+            if   target in board.white: board.white.remove(target)
+            elif target in board.black: board.black.remove(target)
+        else: capture_text = ''
+        board[location[x]][location[y]] = origin
+        board[self.x][self.y] = 'empty'
 
+        if commit_move:
             #update self data
             self.touched = True
             self.x = location[x]
