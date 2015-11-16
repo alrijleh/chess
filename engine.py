@@ -28,15 +28,26 @@ for color in ['white', 'black']:
     Queen(board, 3, y, color)
     King(board, 4, y, color)
 
+
+#game loop
+#  checking if a color is in check generates the other's moves
+#  could be changed for performace gain
 while True:
     null = board.in_check('black')
-    if not board.make_random_move('white'):
-        print('white cannot make a move')
+    if board.make_random_move('white'):
+        print ('white moves: ' + board.move_list[-1])
+    else:
+        if board.in_check('white'): print('checkmate - black wins')
+        else: print ('draw')
         break
     time.sleep(3)
+
     null = board.in_check('white')
-    if not board.make_random_move('black'):
-        print('black cannot make a move')
+    if board.make_random_move('black'):
+        print ('black moves: ' + board.move_list[-1])
+    else:
+        if board.in_check('black'): print('checkmate - white wins')
+        else: print ('draw')
         break
     time.sleep(3)
 

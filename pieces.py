@@ -49,7 +49,7 @@ class Piece(object):
 
     #move self to previously validated location tuple
     #optional arguments allow function to be called without altering true data
-    def move(self, board, location, update_data=True):
+    def move(self, board, location, commit_move=True):
         x = 0
         y = 1
         origin = board[self.x][self.y]
@@ -69,13 +69,15 @@ class Piece(object):
             self.error += error_message
             raise ValueError(error_message, self, location[x], location[y])
 
-        if update_data:
+        if commit_move:
             #update board data
             if ( str(target) != 'empty' ):
+                capture_text = 'x'
                 target.alive = False
                 board.captured.append(target)
                 if   target in board.white: board.white.remove(target)
                 elif target in board.black: board.black.remove(target)
+            else: capture_text = ''
             board[location[x]][location[y]] = origin
             board[self.x][self.y] = 'empty'
 
@@ -83,6 +85,16 @@ class Piece(object):
             self.touched = True
             self.x = location[x]
             self.y = location[y]
+
+            #record move in chess notation
+            if self.type == 'pawn':   type_text = ''
+            elif self.type == 'knight': type_text = 'N'
+            else: type_text = self.type[0].upper()
+
+            move_text = type_text + capture_text + chr(self.x + 97) + str(self.y + 1)
+            board.move_list.append(move_text)
+
+            board.move_count += 1
 
 
 #piece classes

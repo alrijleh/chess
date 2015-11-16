@@ -13,8 +13,11 @@ class Board(object):
         self.matrix = [['empty' for x in range(8)] for y in range(8)] #physical board
         self.white = []    #contains all living white pieces
         self.black = []    #contains all living black pieces
+
         self.captured = [] #contains all captured pieces
         self.errors = []   #contains pieces inconsistance data - should be empty
+        self.move_list =[] #list of moves in human-readable chess notation
+        self.move_count = 0 #count of moves made
 
         random.seed(self,time.time()) #generate random seed
 
