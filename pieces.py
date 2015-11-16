@@ -40,7 +40,7 @@ class Piece(object):
             move_list.remove(move)
             self.move(local_board, move, False)
             if local_board.in_check(self.color):
-                pick_move(move_list)
+                self.pick_move(move_list)
             else:
                 self.move(self.board, move)
                 self.board.draw()
@@ -111,7 +111,10 @@ class Pawn(Piece):
             if str( self.board[self.x][self.y+1]) == 'empty':
                 self.moves.append( (self.x, self.y+1) )
             #two spaces from initial location
-            if str( self.board[self.x][self.y+2]) == 'empty' and not self.touched:
+            if (    not self.touched
+                    and str( self.board[self.x][self.y+1]) == 'empty'
+                    and str( self.board[self.x][self.y+2]) == 'empty'
+                ):
                 self.moves.append( (self.x, self.y+2) )
             #diagonal attacks
             if str( self.board[self.x+1][self.y+1]) == 'black':
@@ -124,7 +127,10 @@ class Pawn(Piece):
             if str( self.board[self.x][self.y-1]) == 'empty':
                 self.moves.append( (self.x, self.y-1) )
             #two spaces from initial location
-            if str( self.board[self.x][self.y-2]) == 'empty' and not self.touched:
+            if (    not self.touched
+                    and str( self.board[self.x][self.y-1]) == 'empty'
+                    and str( self.board[self.x][self.y-2]) == 'empty'
+                ):
                 self.moves.append( (self.x, self.y-2) )
             #diagonal attacks
             if str( self.board[self.x+1][self.y-1]) == 'white':
