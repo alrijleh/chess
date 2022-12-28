@@ -1,254 +1,235 @@
 #pieces.py
 #Contains definitions of chess pieces and functions to generate and execute moves
 
-import time
-import random
-import copy
-
 #abstract class for chess piece
 class Piece(object):
 
-    def __init__(self, board, x, y, color):
-        self.board = board
-        self.x = x
-        self.y = y
+    def __init__(self, color):
         self.color = color
-        self.type = 'unassigned'
-        self.moves = []
-        self.alive = True
-        self.touched = False
-        self.error = ''
+        self.moved = False    #if piece has ever been moved
+        self.en_passant_ready = False
 
-        #update the board with the new piece
-        self.board[x, y] = self
-        if color == 'white': self.board.white.append(self)
-        if color == 'black': self.board.black.append(self)
-
-        random.seed(self,time.time())
-    
-    #calling for the string of a piece returns its color
     def __str__(self):
-        return self.color
+        color_letter = self.color[0]
+        type_letter = self.type_letter
+        string = color_letter + ' ' + type_letter
+        return string
 
-    #pick and execute a valid move
-    #recursive - needs self.moves as argument
-    #initial call should be: pick_move(self.moves)
-    def pick_move(self, move_list):
-        if move_list:
-            local_board = copy.deepcopy(self.board)
-            move = copy.copy(random.choice(move_list))
-            move_list.remove(move)
-            self.move(local_board, move, False)
-            if local_board.in_check(self.color):
-                self.pick_move(move_list)
-            else:
-                self.move(self.board, move)
-                self.board.draw()
-                return True
-        return False
+    def __repr__(self):
+        return self.__str__()
 
-    #move self to previously validated location tuple
-    #optional arguments allow function to be called without altering true data
-    def move(self, board, location, commit_move=True):
-        x = 0
-        y = 1
-        origin = board[self.x, self.y]
-        target = board[location[x], location[y]]
-        
-        #error checking
-        if self == 'empty':
-            error_message = 'Origin location is empty'
-            self.error += error_message
-            raise ValueError(error_message, self, location[x], location[y])
-        if target == 'invalid':
-            error_message = 'Move destination out of range'
-            self.error += error_message
-            raise ValueError(error_message, self, location[x], location[y])
-        if origin is target:
-            error_message = 'Cannot move a piece to itself'
-            self.error += error_message
-            raise ValueError(error_message, self, location[x], location[y])
+    #return all legal mvoes of a piece
+    def get_moves(self,board):
+        safe_moves = []
+        all_movements,all_captures = self.gen_moves(board)
+        all_moves = all_movements + all_captures
 
-        #update board data
-        if ( str(target) != 'empty' ):
-            capture_text = 'x'
-            target.alive = False
-            board.captured.append(target)
-            if   target in board.white: board.white.remove(target)
-            elif target in board.black: board.black.remove(target)
-        else: capture_text = ''
-        board[location[x], location[y]] = origin
-        board[self.x, self.y] = 'empty'
+        for move in all_moves:
+            board.play_move(move,False)
+            if not board.in_check(self.color):
+                safe_moves.append( move )
+            board.undo_move(move)
 
-        if commit_move:
-            #update self data
-            self.touched = True
-            self.x = location[x]
-            self.y = location[y]
+            if board.is_castle(move):
+                for column in range(move.origin[0], move.dest[0]):
+                    row = move.origin[1]
+                    color = board[move.origin].color
+                    if not board.in_danger([column,row],color):
+                        safe_moves.append( move )
+        return safe_moves
+            
+class Move(object):
 
-            #record move in chess notation
-            if self.type == 'pawn':   type_text = ''
-            elif self.type == 'knight': type_text = 'N'
-            else: type_text = self.type[0].upper()
+    def __init__(self, origin, dest, capture = None ):
+        self.origin = origin
+        self.dest = dest
+        self.capture = capture
+        self.promote = 'queen'
 
-            move_text = type_text + capture_text + chr(self.x + 97) + str(self.y + 1)
-            board.move_list.append(move_text)
+    def __str__(self):
+        string = " moving from " + str(self.origin) + " to " + str(self.dest) + " capturing " + str(self.capture)
+        return string
 
-            board.move_count += 1
+    def __repr__(self):
+        return self.__str__()
 
 
 #piece classes
-class Pawn(Piece):
-    
-    def __init__(self, board, x, y, color):
-        super().__init__(board, x, y, color)
-        self.type = 'pawn'
-
-    def gen_moves(self):
-        self.moves.clear()
-        if self.color == 'white':
-            #walk forwards
-            if str( self.board[self.x, self.y+1]) == 'empty':
-                self.moves.append( (self.x, self.y+1) )
-            #two spaces from initial location
-            if (    not self.touched
-                    and str( self.board[self.x, self.y+1]) == 'empty'
-                    and str( self.board[self.x, self.y+2]) == 'empty'
-                ):
-                self.moves.append( (self.x, self.y+2) )
-            #diagonal attacks
-            if str( self.board[self.x+1, self.y+1]) == 'black':
-                self.moves.append( (self.x+1, self.y+1) )
-            if str( self.board[self.x-1, self.y+1]) == 'black':
-                self.moves.append( (self.x-1, self.y+1) )
-
-        elif self.color == 'black':
-            #walk forwards
-            if str( self.board[self.x, self.y-1]) == 'empty':
-                self.moves.append( (self.x, self.y-1) )
-            #two spaces from initial location
-            if (    not self.touched
-                    and str( self.board[self.x, self.y-1]) == 'empty'
-                    and str( self.board[self.x, self.y-2]) == 'empty'
-                ):
-                self.moves.append( (self.x, self.y-2) )
-            #diagonal attacks
-            if str( self.board[self.x+1, self.y-1]) == 'white':
-                self.moves.append( (self.x+1, self.y-1) )
-            if str( self.board[self.x-1, self.y-1]) == 'white':
-                self.moves.append( (self.x-1, self.y-1) )
-
 class Rook(Piece):
 
-    def __init__(self, board, x, y, color):
-        super().__init__(board, x, y, color)
-        self.type = 'rook'
+    def __init__(self, color):
+        super().__init__( color)
+        self.type_letter = 'R'
 
-    def gen_moves(self):
-        x = 0
-        y = 1
-        self.moves.clear()
+    def gen_moves(self,board):
+        location = board.get_location(self)
+        moves = []
+        captures = []
         for y_offset in [-1,0,1]:
             for x_offset in [-1,0,1]:
-                if (x_offset + y_offset) % 2 != 0: #only one coordinate is changing
-                    location = (self.x + x_offset, self.y + y_offset)
-                    while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                        target = self.board[location[x], location[y]]
-                        if str(target) == 'empty':
-                            self.moves.append( location )
+                if abs(y_offset) + abs(x_offset)  == 1: #only one coordinate is changing
+                    new_location = [location[0] + x_offset, location[1] + y_offset]
+                    while (new_location[0] >= 0 and new_location[0] < 8 and new_location[1] >= 0 and new_location[1] < 8):
+                        target = board[new_location]
+                        if target is None:
+                            moves.append( Move(location,new_location) )
                         elif target.color != self.color:
-                            self.moves.append( location )
+                            captures.append( Move(location,new_location,target) )
                             break
                         elif target.color == self.color:
                             break
-                        location = (location[x] + x_offset, location[y] + y_offset)
+                        new_location = [new_location[0] + x_offset, new_location[1] + y_offset]
+        return moves, captures
 
+class Pawn(Piece):
+    
+    def __init__(self, color):
+        super().__init__( color)
+        self.type_letter = 'P'
+
+    def gen_moves(self,board):
+        location = board.get_location(self)
+        moves = []
+        captures = []
+        if self.color == 'white':
+            direction = 1
+        elif self.color == 'black':
+            direction = -1
+
+        #walk forwards
+        step_location = [location[0],location[1]+1*direction]
+        if board[step_location] == None :
+            moves.append( Move(location,step_location) )
+        #two spaces from initial location
+        step2_location = [location[0],location[1]+2*direction]
+        if ( not self.moved
+             and board[step_location] is None
+             and board[step2_location] is None):
+            moves.append( Move(location,step2_location) )
+        #diagonal attacks
+        diagonal = {}
+        en_passant_victim_loc = {}
+        for i in [-1,1]:
+            diagonal[i] = [location[0]+1*i, location[1]+1*direction]
+            target = board[ diagonal[i] ]
+            if target is not None:
+                if target.color != self.color:
+                    captures.append( Move(location,diagonal[i],target ) )
+            #en passant
+            en_passant_victim_loc[i]  = [location[0]+1*i, location[1]]
+            target = board[ en_passant_victim_loc[i] ]
+            if target is not None:
+                if ( target.color != self.color
+                    and target is Pawn
+                    and target.en_passant_ready == True):
+                    captures.append( Move(location,diagonal[i],target ) )
+        return moves,captures
+                    
 class Bishop(Piece):
 
-    def __init__(self, board, x, y, color):
-        super().__init__(board, x, y, color)
-        self.type = 'bishop'
+    def __init__(self, color):
+        super().__init__( color)
+        self.type_letter = 'B'
 
-    def gen_moves(self):
-        x = 0
-        y = 1
-        self.moves.clear()
+    def gen_moves(self,board):
+        location = board.get_location(self)
+        moves = []
+        captures = []
         for y_offset in [-1,1]:
             for x_offset in [-1,1]:
-                location = (self.x + x_offset, self.y + y_offset)
-                while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                    target = self.board[location[x], location[y]]
-                    if str(target) == 'empty':
-                        self.moves.append( location )
+                new_location = [location[0] + x_offset, location[1] + y_offset]
+                while (new_location[0] >= 0 and new_location[0] < 8 and new_location[1] >= 0 and new_location[1] < 8):
+                    target = board[new_location]
+                    if target is None:
+                        moves.append( Move(location,new_location) )
                     elif target.color != self.color:
-                        self.moves.append( location )
+                        captures.append( Move(location,new_location,target) )
                         break
                     elif target.color == self.color:
                         break
-                    location = (location[x] + x_offset, location[y] + y_offset)
+                    new_location = [new_location[0] + x_offset, new_location[1] + y_offset]
+        return moves,captures
 
 class Queen(Piece):
 
-    def __init__(self, board, x, y, color):
-        super().__init__(board, x, y, color)
-        self.type = 'queen'
+    def __init__(self, color):
+        super().__init__(color)
+        self.type_letter = 'Q'
 
-    def gen_moves(self):
-        x = 0
-        y = 1
-        self.moves.clear()
+    def gen_moves(self,board):
+        location = board.get_location(self)
+        moves = []
+        captures = []
         for y_offset in [-1,0,1]:
             for x_offset in [-1,0,1]:
-                location = (self.x + x_offset, self.y + y_offset)
-                while (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                    target = self.board[location[x], location[y]]
-                    if str(target) == 'empty':
-                        self.moves.append( location )
+                new_location = [location[0] + x_offset, location[1] + y_offset]
+                while (new_location[0] >= 0 and new_location[0] < 8 and new_location[1] >= 0 and new_location[1] < 8):
+                    if x_offset == 0 and y_offset == 0:
+                        break
+                    target = board[new_location[0], new_location[1]]
+                    if target is None:
+                        moves.append( Move(location,new_location) )
                     elif target.color != self.color:
-                        self.moves.append( location )
+                        captures.append( Move(location,new_location,target) )
                         break
                     elif target.color == self.color:
                         break
-                    location = (location[x] + x_offset, location[y] + y_offset)
+                    new_location = [new_location[0] + x_offset, new_location[1] + y_offset]
+        return moves,captures
 
 class Knight(Piece):
 
-    def __init__(self, board, x, y, color):
-        super().__init__(board, x, y, color)
-        self.type = 'knight'
+    def __init__(self, color):
+        super().__init__( color)
+        self.type_letter = 'N'
 
-    def gen_moves(self):
-        x = 0
-        y = 1
-        self.moves.clear()
+    def gen_moves(self,board):
+        location = board.get_location(self)
+        moves = []
+        captures=[]
         for y_offset in [-2,-1,1,2]:
             for x_offset in [-2,-1,1,2]:
-                if (x_offset + y_offset) % 2 != 0: #movement must be 2,1 or 1,2
-                    location = (self.x + x_offset, self.y + y_offset)
-                    if (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                        target = self.board[location[x], location[y]]
-                        if str(target) == 'empty':
-                            self.moves.append( location )
+                if abs(y_offset) + abs(x_offset) == 3: #movement must be 2,1 or 1,2
+                    new_location = [location[0] + x_offset, location[1] + y_offset]
+                    if (new_location[0] >= 0 and new_location[0] < 8 and new_location[1] >= 0 and new_location[1] < 8):
+                        target = board[new_location]
+                        if target is None:
+                            moves.append( Move(location,new_location) )
                         elif target.color != self.color:
-                            self.moves.append( location )
+                            captures.append( Move(location,new_location,target) )
+        return moves,captures
 
 class King(Piece):
 
-    def __init__(self, board, x, y, color):
-        super().__init__(board, x, y, color)
-        self.type = 'king'
+    def __init__(self, color):
+        super().__init__(color)
+        self.type_letter = 'K'
 
-    def gen_moves(self):
-        x = 0
-        y = 1
-        self.moves.clear()
+    def gen_moves(self,board):
+        location = board.get_location(self)
+        moves = []
+        captures = []
         for y_offset in [-1,0,1]:
             for x_offset in [-1,0,1]:
-                location = (self.x + x_offset, self.y + y_offset)
-                if (location[x] >= 0 and location[x] < 8 and location[y] >= 0 and location[y] < 8):
-                    target = self.board[location[x], location[y]]
-                    if str(target) == 'empty':
-                        self.moves.append( location )
+                new_location = [location[0] + x_offset, location[1] + y_offset]
+                if (new_location[0] >= 0 and new_location[0] < 8 and new_location[1] >= 0 and new_location[1] < 8):
+                    target = board[new_location]
+                    if target is None:
+                        moves.append( Move(location,new_location) )
                     elif target.color != self.color:
-                        self.moves.append( location )
-
+                        captures.append( Move(location,new_location,target) )
+        #castling
+        if self.moved is False:
+            row = location[1]
+            row_ahead = row+1 if self.color == 'white' else row-1
+            #right
+            if board[7,row] is not None:
+                if board[7,row].moved is False and \
+                   board[5,row] is None and board[6,row] is None:
+                        moves.append( Move(location, [6,row]) )
+            #left
+            if board[0,row] is not None:
+                if board[0,row].moved is False and \
+                   board[1,row] is None and board[2,row] is None and board[3,row] is None:
+                        moves.append( Move(location, [2,row]) )
+        return moves,captures
