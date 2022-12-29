@@ -3,6 +3,7 @@
 import unicodedata
 
 from utils import other_color
+
 # abstract class for chess piece
 class Piece(object):
     def __init__(self, color):
@@ -46,10 +47,10 @@ class Move(object):
         self.dest = dest
         self.capture = capture
         self.promote = "queen"
-
+        
     def __str__(self):
         return f" moving from {chr(self.origin[0]+97)}{self.origin[1] +1} to {chr(self.dest[0]+97)}{self.dest[1] +1}{f' capturing{self.capture}' if self.capture else ''}"
-
+        
     def __repr__(self):
         return self.__str__()
 
@@ -60,7 +61,7 @@ class Rook(Piece):
         super().__init__(color)
         self.type_letter = "R"
         self.unicode_str = f"{other_color(color).upper()} CHESS ROOK"
-
+        
     def gen_moves(self, board):
         location = board.get_location(self)
         moves = []
