@@ -27,7 +27,7 @@ class Piece(object):
         all_moves = all_movements + all_captures
 
         for move in all_moves:
-            board.play_move(move, False)
+            board.try_move(move)
             if not board.in_check(self.color):
                 safe_moves.append(move)
             board.undo_move(move)
