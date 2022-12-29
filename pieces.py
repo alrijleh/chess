@@ -52,12 +52,12 @@ class Move(object):
         self.is_en_passant = False
         self.color = None
         self.board = None
-        #user set
+        #optional, user set
         self.promote = "queen"
         self.message = ""
 
     def __str__(self):
-        return f" moving from {chr(self.origin[0]+97)}{self.origin[1] +1} to {chr(self.dest[0]+97)}{self.dest[1] +1}{f' capturing{self.capture}' if self.capture else ''}"
+        return f"{self.moved_piece} moving from {chr(self.origin[0]+97)}{self.origin[1] +1} to {chr(self.dest[0]+97)}{self.dest[1] +1}{f' capturing{self.capture}' if self.capture else ''}"
 
     def __repr__(self):
         return self.__str__()

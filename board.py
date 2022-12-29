@@ -74,8 +74,6 @@ class Board(object):
 
         # only run these when a move is played - not while testing for check
         if commit is True:
-            # test output
-            self.move_log.append(str(moved_piece) + str(move))
 
             move.capture = self[move.dest]
             move.moved_piece = self[move.origin]
@@ -97,6 +95,7 @@ class Board(object):
 
             # move rook if castling
             if self.is_castle(move):
+                move.is_castle = True
                 row = move.origin[0]
                 # castle right
                 if move.dest[0] == 6:
@@ -119,7 +118,7 @@ class Board(object):
                         self[move.dest] = Queen(color)
                     return
 
-        # normal move handling
+        # basic move handling
         self[move.dest] = moved_piece
         self[move.origin] = None
 
@@ -191,7 +190,7 @@ class Board(object):
 
         if self.move_list:
             move = self.move_list[-1]
-            move_text = f"  {self.move_log[-1]}"
+            move_text = f"  {move}"
             message = f"   {move.color}: {move.message}" if move.message else ""
         else:
             message = ""
