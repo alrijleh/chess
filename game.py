@@ -21,7 +21,8 @@ if __name__ == "__main__":
             move = randombot(board, color)
         elif color == 'black':
             move = randombot(board, color)
-        board.play_move(move)
+        move.color = color
+        board.play_move(move,color)
         print(board)
         #input()
         color = other_color(color)

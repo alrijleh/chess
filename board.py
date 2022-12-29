@@ -68,57 +68,74 @@ class Board(object):
         else:
             return False
 
-    def play_move(self, move, commit=True):
+    def move_is_legal(self,move,color):
+        moved_piece = self[move.origin]
+        if moved_piece is None:
+            return False
+        piece_color = moved_piece.color
+        if color != piece_color:
+            return False
+        is_legal = False
+        for possible_move in self.possible_moves(color):
+            if move.origin == possible_move.origin and move.dest == possible_move.dest:
+                is_legal = True
+        return is_legal
+
+    def play_move(self, move, color):
         moved_piece = self[move.origin]
         capture = self[move.dest]
 
-        # only run these when a move is played - not while testing for check
-        if commit is True:
+        if not self.move_is_legal(move,color):
+            print("illegal move bucko")
+            exit(-1)
 
-            move.capture = self[move.dest]
-            move.moved_piece = self[move.origin]
-            move.color = moved_piece.color
-            move.board = self
+        move.capture = self[move.dest]
+        move.moved_piece = self[move.origin]
+        move.board = self
 
-            moved_piece.moved = True
-            self.move_list.append(move)
-            if capture is not None:
-                self.capture_list.append(capture)
+        moved_piece.moved = True
+        self.move_list.append(move)
+        if capture is not None:
+            self.capture_list.append(capture)
 
-            # set the flag for en passant
-            color = moved_piece.color
-            for piece in self.get_pieces(color):
-                piece.en_passant_ready = False
-            if isinstance(piece, Pawn):
-                if abs(move.origin[1] - move.dest[1]) == 2:
-                    piece.en_passant_ready = True
+        # set the flag for en passant
+        for piece in self.get_pieces(move.color):
+            piece.en_passant_ready = False
+        if isinstance(piece, Pawn):
+            if abs(move.origin[1] - move.dest[1]) == 2:
+                piece.en_passant_ready = True
 
-            # move rook if castling
-            if self.is_castle(move):
-                move.is_castle = True
-                row = move.origin[0]
-                # castle right
-                if move.dest[0] == 6:
-                    rook = self[7, row]
-                    self[7, row] = None
-                    self[5, row] = rook
-                # castle right
-                if move.dest[0] == 2:
-                    rook = self[0, row]
-                    self[0, row] = None
-                    self[5, row] = rook
+        # move rook if castling
+        if self.is_castle(move):
+            move.is_castle = True
+            row = move.origin[0]
+            # castle right
+            if move.dest[0] == 6:
+                rook = self[7, row]
+                self[7, row] = None
+                self[5, row] = rook
+            # castle right
+            if move.dest[0] == 2:
+                rook = self[0, row]
+                self[0, row] = None
+                self[5, row] = rook
 
-            # pawn promotion
-            if isinstance(moved_piece, Pawn):
-                if move.dest[1] in {0, 7}:
-                    self[move.origin] = None
-                    if move.promote == "knight":
-                        self[move.dest] = Knight(color)
-                    else:
-                        self[move.dest] = Queen(color)
-                    return
+        # pawn promotion
+        if isinstance(moved_piece, Pawn):
+            if move.dest[1] in {0, 7}:
+                self[move.origin] = None
+                if move.promote == "knight":
+                    self[move.dest] = Knight(move.color)
+                else:
+                    self[move.dest] = Queen(move.color)
+                return
 
         # basic move handling
+        self[move.dest] = moved_piece
+        self[move.origin] = None
+
+    def try_move(self,move):
+        moved_piece = self[move.origin]
         self[move.dest] = moved_piece
         self[move.origin] = None
 
