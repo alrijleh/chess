@@ -130,21 +130,16 @@ class Board(object):
     def in_checkmate(self, color):
         if self.in_check(color):
             pieces = self.get_pieces(color)
-            for piece in pieces:
-                moves = piece.get_moves(self)
-                if moves:
-                    return False
+            if self.possible_moves(color):
+                return False
             print("get rekt " + color)
             exit(0)
             return True
 
     def in_stalemate(self, color):
         if not self.in_check(color):
-            pieces = self.get_pieces(color)
-            for piece in pieces:
-                moves = piece.get_moves(self)
-                if moves:
-                    return False
+            if self.possible_moves(color):
+                return False
             print("you both suck")
             exit(0)
             return True
@@ -177,6 +172,13 @@ class Board(object):
         LINE_CLEAR = "\x1b[2K"
         for i in range(n):
             print(LINE_UP, end=LINE_CLEAR)
+
+    def possible_moves(self,color):
+        all_moves = []
+        pieces = self.get_pieces(color)
+        for piece in pieces:
+            all_moves.extend(piece.get_moves(self))
+        return all_moves
 
     # printing the board onscreen
     def __str__(self):
