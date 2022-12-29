@@ -5,6 +5,7 @@ from pieces import *
 
 from utils import other_color
 
+
 class Board(object):
     def __init__(self):
         self.matrix = [[None for x in range(8)] for y in range(8)]  # physical board
@@ -127,15 +128,16 @@ class Board(object):
             if self.possible_moves(color):
                 return False
             print("get rekt " + color)
-            exit(0)
             return True
 
     def in_stalemate(self, color):
+        if len(self.get_pieces("black") + self.get_pieces("white")) <= 2:
+            print("you both suck")
+            return True
         if not self.in_check(color):
             if self.possible_moves(color):
                 return False
             print("you both suck")
-            exit(0)
             return True
 
     def setup(self):
@@ -167,7 +169,7 @@ class Board(object):
         for i in range(n):
             print(LINE_UP, end=LINE_CLEAR)
 
-    def possible_moves(self,color):
+    def possible_moves(self, color):
         all_moves = []
         pieces = self.get_pieces(color)
         for piece in pieces:

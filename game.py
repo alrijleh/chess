@@ -15,16 +15,17 @@ if __name__ == "__main__":
 
     print(board)
     while True:
-        board.in_checkmate("white")
-        board.in_stalemate("white")
+        if board.in_checkmate("white") or board.in_stalemate("white"):
+            # cleanup code post game
+            exit(0)
+
         move = randombot(board, "white")
         board.play_move(move)
         print(board)
-        input()
 
-        board.in_checkmate("black")
-        board.in_stalemate("black")
+        if board.in_checkmate("black") or board.in_stalemate("black"):
+            # clean up code post game
+            exit(0)
         move = randombot(board, "black")
         board.play_move(move)
         print(board)
-        input()
