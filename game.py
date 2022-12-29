@@ -6,7 +6,8 @@ import time
 from board import Board
 from pieces import King, Queen, Rook, Bishop, Knight, Pawn
 
-from bots.randombot.randombot import randombot
+from randombot import randombot
+from simpbot import simpbot
 
 
 if __name__ == "__main__":
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     while True:
         board.in_checkmate("white")
         board.in_stalemate("white")
-        move = randombot(board, "white")
+        move = simpbot(board, "white")
         board.play_move(move)
         print(board)
         input()

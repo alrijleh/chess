@@ -5,6 +5,7 @@ from pieces import *
 
 from utils import other_color
 
+
 class Board(object):
     def __init__(self):
         self.matrix = [[None for x in range(8)] for y in range(8)]  # physical board
@@ -167,7 +168,7 @@ class Board(object):
         for i in range(n):
             print(LINE_UP, end=LINE_CLEAR)
 
-    def possible_moves(self,color):
+    def possible_moves(self, color):
         all_moves = []
         pieces = self.get_pieces(color)
         for piece in pieces:
