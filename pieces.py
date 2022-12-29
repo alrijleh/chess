@@ -2,6 +2,8 @@
 # Contains definitions of chess pieces and functions to generate and execute moves
 import unicodedata
 
+from utils import other_color
+
 # abstract class for chess piece
 class Piece(object):
     def __init__(self, color):
@@ -45,14 +47,10 @@ class Move(object):
         self.dest = dest
         self.capture = capture
         self.promote = "queen"
-
-    def coord_pair_to_readable_str(self, pair):
-        return f"{chr(pair[0] + 97)}{pair[1] +1}"
-
+        
     def __str__(self):
-        done_took_piece = lambda x: f" capturing{x}" if x != None else ""
-        return f"moving from {self.coord_pair_to_readable_str(self.origin)} to {self.coord_pair_to_readable_str(self.dest)}{done_took_piece(self.capture)}"
-
+        return f" moving from {chr(self.origin[0]+97)}{self.origin[1] +1} to {chr(self.dest[0]+97)}{self.dest[1] +1}{f' capturing{self.capture}' if self.capture else ''}"
+        
     def __repr__(self):
         return self.__str__()
 
@@ -62,8 +60,8 @@ class Rook(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "R"
-        self.unicode_str = f"{color.upper()} CHESS ROOK"
-
+        self.unicode_str = f"{other_color(color).upper()} CHESS ROOK"
+        
     def gen_moves(self, board):
         location = board.get_location(self)
         moves = []
@@ -99,7 +97,7 @@ class Pawn(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "P"
-        self.unicode_str = f"{color.upper()} CHESS PAWN"
+        self.unicode_str = f"{other_color(color).upper()} CHESS PAWN"
 
     def gen_moves(self, board):
         location = board.get_location(self)
@@ -148,7 +146,7 @@ class Bishop(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "B"
-        self.unicode_str = f"{color.upper()} CHESS BISHOP"
+        self.unicode_str = f"{other_color(color).upper()} CHESS BISHOP"
 
     def gen_moves(self, board):
         location = board.get_location(self)
@@ -182,7 +180,7 @@ class Queen(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "Q"
-        self.unicode_str = f"{color.upper()} CHESS QUEEN"
+        self.unicode_str = f"{other_color(color).upper()} CHESS QUEEN"
 
     def gen_moves(self, board):
         location = board.get_location(self)
@@ -218,7 +216,7 @@ class Knight(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "N"
-        self.unicode_str = f"{color.upper()} CHESS KNIGHT"
+        self.unicode_str = f"{other_color(color).upper()} CHESS KNIGHT"
 
     def gen_moves(self, board):
         location = board.get_location(self)
@@ -246,7 +244,7 @@ class King(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "K"
-        self.unicode_str = f"{color.upper()} CHESS KING"
+        self.unicode_str = f"{other_color(color).upper()} CHESS KING"
 
     def gen_moves(self, board):
         location = board.get_location(self)

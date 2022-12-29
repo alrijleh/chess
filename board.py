@@ -3,13 +3,7 @@
 
 from pieces import *
 
-
-def other_color(color):
-    if color == "white":
-        return "black"
-    if color == "black":
-        return "white"
-
+from utils import other_color
 
 class Board(object):
     def __init__(self):
