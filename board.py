@@ -10,9 +10,8 @@ class Board(object):
     def __init__(self):
         self.matrix = [[None for x in range(8)] for y in range(8)]  # physical board
 
-        self.capture_list = []
-        self.move_list = []  # list of moves in human-readable chess notation
-        self.move_count = 0  # count of moves made
+        self.capture_list = list()
+        self.move_list = list() 
         self.move_log = list()
 
     # allow indexing directly into matrix
@@ -75,11 +74,16 @@ class Board(object):
 
         # only run these when a move is played - not while testing for check
         if commit is True:
-            # test output
-            self.move_log.append(str(moved_piece) + str(move))
+
+            move.capture = self[move.dest]
+            move.moved_piece = self[move.origin]
+            move.color = moved_piece.color
+            move.board = self
 
             moved_piece.moved = True
-            self.capture_list.append(capture)
+            self.move_list.append(move)
+            if capture is not None:
+                self.capture_list.append(capture)
 
             # set the flag for en passant
             color = moved_piece.color
@@ -91,6 +95,7 @@ class Board(object):
 
             # move rook if castling
             if self.is_castle(move):
+                move.is_castle = True
                 row = move.origin[0]
                 # castle right
                 if move.dest[0] == 6:
@@ -113,7 +118,7 @@ class Board(object):
                         self[move.dest] = Queen(color)
                     return
 
-        # normal move handling
+        # basic move handling
         self[move.dest] = moved_piece
         self[move.origin] = None
 
@@ -181,20 +186,44 @@ class Board(object):
         self.clear_line()
         width = 8 * 3 + 8 + 1
         hieght = 8 + 9
-        line = "\n" + "   " + "_" * width + "\n"
-        output = f"{self.move_log[-1]}\n" if self.move_log else "\n"
-        output += line
+        line = "\n" + "   " + "_" * width 
+
+        if self.move_list:
+            move = self.move_list[-1]
+            move_text = f"  {move}"
+            message = f"   {move.color}: {move.message}" if move.message else ""
+        else:
+            message = ""
+            move_text = ""
+        capture_message_dict = {"black" : "", "white" : ""}
+        if self.capture_list:
+            for color in ['black','white']:
+                capture_list = list(filter( lambda x: x.color == color, self.capture_list ))
+                capture_message = f"   {color} losses: " + "".join(str(x) for x in capture_list)
+                capture_message_dict .update({color : capture_message})
+        turn_number_text = f"   Turn:{len(self.move_list)}"
+
+        output = f'{line}\n'
         for y in range(7, -1, -1):
             output += " " + str(y + 1) + " |"
             for x in range(8):
                 piece = self.matrix[x][y]
-                # if space is empty
                 if piece is None:
                     output += "   "
-                # if occupied by piece
                 else:
                     output += str(piece)
                 output += "|"
-            output += line
+                if x==7:
+                    if y==7:
+                        output += move_text
+                    if y==6:
+                        output += message
+                    if y==3:
+                        output += capture_message_dict['white']
+                    if y==2:
+                        output += capture_message_dict['black']
+                    if y==0:
+                        output += turn_number_text
+            output += f'{line}\n'
         output += "     a   b   c   d   e   f   g   h"
         return output
