@@ -218,7 +218,7 @@ class Board(object):
                 capture_list = list(
                     filter(lambda x: x.color == color, self.capture_list)
                 )
-                capture_message = f"   {color} losses: " + "".join(
+                capture_message = f"   {color} casualties: " + "".join(
                     str(x) for x in capture_list
                 )
                 capture_message_dict.update({color: capture_message})
