@@ -15,14 +15,14 @@ if __name__ == "__main__":
     board.setup()
     print(board)
 
-    color = 'white'
+    color = "white"
     while not board.in_checkmate(color) and not board.in_stalemate(color):
-        if color == 'white':
+        if color == "white":
             move = randombot(board, color)
-        elif color == 'black':
+        elif color == "black":
             move = randombot(board, color)
         move.color = color
-        board.play_move(move,color)
+        board.play_move(move, color)
         print(board)
-        #input()
+        # input()
         color = other_color(color)
