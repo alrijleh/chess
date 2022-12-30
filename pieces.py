@@ -157,6 +157,7 @@ class Bishop(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "B"
+        self.value = 3
         self.unicode_str = f"{other_color(color).upper()} CHESS BISHOP"
 
     def gen_moves(self, board):
@@ -191,6 +192,7 @@ class Queen(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "Q"
+        self.value = 10
         self.unicode_str = f"{other_color(color).upper()} CHESS QUEEN"
 
     def gen_moves(self, board):
@@ -227,6 +229,7 @@ class Knight(Piece):
     def __init__(self, color):
         super().__init__(color)
         self.type_letter = "N"
+        self.value = 3
         self.unicode_str = f"{other_color(color).upper()} CHESS KNIGHT"
 
     def gen_moves(self, board):
