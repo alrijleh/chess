@@ -11,7 +11,7 @@ class Board(object):
         self.matrix = [[None for x in range(8)] for y in range(8)]  # physical board
 
         self.capture_list = list()
-        self.move_list = list() 
+        self.move_list = list()
         self.move_log = list()
 
     # allow indexing directly into matrix
@@ -68,7 +68,7 @@ class Board(object):
         else:
             return False
 
-    def move_is_legal(self,move,color):
+    def move_is_legal(self, move, color):
         moved_piece = self[move.origin]
         if moved_piece is None:
             return False
@@ -85,7 +85,7 @@ class Board(object):
         moved_piece = self[move.origin]
         capture = self[move.dest]
 
-        if not self.move_is_legal(move,color):
+        if not self.move_is_legal(move, color):
             print("illegal move bucko")
             exit(-1)
 
@@ -134,7 +134,7 @@ class Board(object):
         self[move.dest] = moved_piece
         self[move.origin] = None
 
-    def try_move(self,move):
+    def try_move(self, move):
         moved_piece = self[move.origin]
         self[move.dest] = moved_piece
         self[move.origin] = None
@@ -203,7 +203,7 @@ class Board(object):
         self.clear_line()
         width = 8 * 3 + 8 + 1
         hieght = 8 + 9
-        line = "\n" + "   " + "_" * width 
+        line = "\n" + "   " + "_" * width
 
         if self.move_list:
             move = self.move_list[-1]
@@ -212,15 +212,19 @@ class Board(object):
         else:
             message = ""
             move_text = ""
-        capture_message_dict = {"black" : "", "white" : ""}
+        capture_message_dict = {"black": "", "white": ""}
         if self.capture_list:
-            for color in ['black','white']:
-                capture_list = list(filter( lambda x: x.color == color, self.capture_list ))
-                capture_message = f"   {color} losses: " + "".join(str(x) for x in capture_list)
-                capture_message_dict .update({color : capture_message})
+            for color in ["black", "white"]:
+                capture_list = list(
+                    filter(lambda x: x.color == color, self.capture_list)
+                )
+                capture_message = f"   {color} losses: " + "".join(
+                    str(x) for x in capture_list
+                )
+                capture_message_dict.update({color: capture_message})
         turn_number_text = f"   Turn:{len(self.move_list)}"
 
-        output = f'{line}\n'
+        output = f"{line}\n"
         for y in range(7, -1, -1):
             output += " " + str(y + 1) + " |"
             for x in range(8):
@@ -230,17 +234,17 @@ class Board(object):
                 else:
                     output += str(piece)
                 output += "|"
-                if x==7:
-                    if y==7:
+                if x == 7:
+                    if y == 7:
                         output += move_text
-                    if y==6:
+                    if y == 6:
                         output += message
-                    if y==3:
-                        output += capture_message_dict['white']
-                    if y==2:
-                        output += capture_message_dict['black']
-                    if y==0:
+                    if y == 3:
+                        output += capture_message_dict["white"]
+                    if y == 2:
+                        output += capture_message_dict["black"]
+                    if y == 0:
                         output += turn_number_text
-            output += f'{line}\n'
+            output += f"{line}\n"
         output += "     a   b   c   d   e   f   g   h"
         return output
