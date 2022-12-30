@@ -31,24 +31,24 @@ def simpbot(board, color):
 
     her_move_locs = []
     for move in her_moves:
-        her_move_locs.append(move.dest)
+        her_move_locs.append(move.target)
 
     my_sacrifice_moves = []
     for move in my_moves:
-        if move.dest in her_move_locs:
+        if move.target in her_move_locs:
             my_sacrifice_moves.append(move)
 
     if my_sacrifice_moves:
         my_sacrifice_moves = sorted(
             my_sacrifice_moves,
-            key=lambda x: min([math.dist(x.dest, i) for i in her_locs]),
+            key=lambda x: min([math.dist(x.target, i) for i in her_locs]),
         )
         true_sacrifices = []
         for sacrifice_move in my_sacrifice_moves:
             true_sacrifice = True
             for move in my_moves:
                 if move != sacrifice_move:
-                    if move.dest == sacrifice_move.dest:
+                    if move.target == sacrifice_move.target:
                         true_sacrifice = False
             if true_sacrifice:
                 true_sacrifices.append(sacrifice_move)
@@ -74,7 +74,7 @@ def simpbot(board, color):
 
     safe_moves = []
     for move in my_moves:
-        if move.dest not in her_locs:
+        if move.target not in her_locs:
             safe_moves.append(move)
     if safe_moves:
         return random.choice(safe_moves)

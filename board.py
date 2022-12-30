@@ -51,7 +51,7 @@ class Board(object):
         for piece in enemy_pieces:
             moves, captures = piece.gen_moves(self)
             for capture_move in captures:
-                if capture_move.dest == location:
+                if capture_move.target == location:
                     return True
         return False
 
@@ -63,7 +63,7 @@ class Board(object):
 
     def is_castle(self, move):
         moved_piece = self[move.origin]
-        if isinstance(moved_piece, King) and abs(move.origin[0] - move.dest[0]) > 1:
+        if isinstance(moved_piece, King) and abs(move.origin[0] - move.target[0]) > 1:
             return True
         else:
             return False
@@ -77,19 +77,19 @@ class Board(object):
             return False
         is_legal = False
         for possible_move in self.possible_moves(color):
-            if move.origin == possible_move.origin and move.dest == possible_move.dest:
+            if move.origin == possible_move.origin and move.target == possible_move.target:
                 is_legal = True
         return is_legal
 
     def play_move(self, move, color):
         moved_piece = self[move.origin]
-        capture = self[move.dest]
+        capture = self[move.target]
 
         if not self.move_is_legal(move, color):
             print("illegal move bucko")
             exit(-1)
 
-        move.capture = self[move.dest]
+        move.capture = self[move.target]
         move.moved_piece = self[move.origin]
         move.board = self
 
@@ -102,7 +102,7 @@ class Board(object):
         for piece in self.get_pieces(move.color):
             piece.en_passant_ready = False
         if isinstance(piece, Pawn):
-            if abs(move.origin[1] - move.dest[1]) == 2:
+            if abs(move.origin[1] - move.target[1]) == 2:
                 piece.en_passant_ready = True
 
         # move rook if castling
@@ -110,39 +110,39 @@ class Board(object):
             move.is_castle = True
             row = move.origin[0]
             # castle right
-            if move.dest[0] == 6:
+            if move.target[0] == 6:
                 rook = self[7, row]
                 self[7, row] = None
                 self[5, row] = rook
             # castle right
-            if move.dest[0] == 2:
+            if move.target[0] == 2:
                 rook = self[0, row]
                 self[0, row] = None
                 self[5, row] = rook
 
         # pawn promotion
         if isinstance(moved_piece, Pawn):
-            if move.dest[1] in {0, 7}:
+            if move.target[1] in {0, 7}:
                 self[move.origin] = None
                 if move.promote == "knight":
-                    self[move.dest] = Knight(move.color)
+                    self[move.target] = Knight(move.color)
                 else:
-                    self[move.dest] = Queen(move.color)
+                    self[move.target] = Queen(move.color)
                 return
 
         # basic move handling
-        self[move.dest] = moved_piece
+        self[move.target] = moved_piece
         self[move.origin] = None
 
     def try_move(self, move):
         moved_piece = self[move.origin]
-        self[move.dest] = moved_piece
+        self[move.target] = moved_piece
         self[move.origin] = None
 
     def undo_move(self, move):
-        moved_piece = self[move.dest]
+        moved_piece = self[move.target]
         self[move.origin] = moved_piece
-        self[move.dest] = move.capture
+        self[move.target] = move.capture
 
     def in_checkmate(self, color):
         if self.in_check(color):

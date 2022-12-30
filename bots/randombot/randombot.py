@@ -6,12 +6,12 @@ def randombot(board, color):
     return random.choice(board.possible_moves(color))
 
 def randombot2(board, color):
-    capturing_moves = list()
+    taking_moves = list()
     for move in board.possible_moves(color):
         if move.capture is not None:
-            capturing_moves.append(move)
-    if capturing_moves:
-        return random.choice(capturing_moves)
+            taking_moves.append(move)
+    if taking_moves:
+        return random.choice(taking_moves)
     else:
         return random.choice(board.possible_moves(color))
 
@@ -22,7 +22,7 @@ def randombot_plus(board, color):
     thier_capturing_moves = [move for move in their_moves if move.capture is not None]
     my_capturing_moves    = [move for move in my_moves    if move.capture is not None]
     
-    threatened_pieces = [board[move.dest] for move in thier_capturing_moves ]
+    threatened_pieces = [board[move.target] for move in thier_capturing_moves ]
 
     for piece in threatened_pieces:
         escape_moves = piece.get_moves(board) 
