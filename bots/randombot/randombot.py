@@ -1,4 +1,5 @@
 import random
+from utils import *
 
 
 def randombot(board, color):
