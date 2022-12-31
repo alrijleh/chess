@@ -154,12 +154,12 @@ class Board(object):
 
     def in_stalemate(self, color):
         if len(self.get_pieces("black") + self.get_pieces("white")) <= 2:
-            print("you both suck")
+            return True
+        if len(self.move_list) > 500:
             return True
         if not self.in_check(color):
             if self.possible_moves(color):
                 return False
-            print("you both suck")
             return True
 
     def setup(self):
