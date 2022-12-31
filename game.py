@@ -5,9 +5,10 @@ import time
 
 from board import Board
 from pieces import King, Queen, Rook, Bishop, Knight, Pawn
+from utils import other_color
 
 from bots.randombot.randombot import *
-from utils import other_color
+from simpbot import simpbot
 
 
 def run_game():
@@ -18,7 +19,7 @@ def run_game():
     color = "white"
     while not board.in_checkmate(color) and not board.in_stalemate(color):
         if color == "white":
-            move = randombot2(board, color)
+            move = simpbot(board, color)
         elif color == "black":
             move = randombot_plus(board, color)
         move.color = color

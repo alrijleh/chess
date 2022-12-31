@@ -25,7 +25,7 @@ def randombot_plus(board, color):
     threatened_pieces = [board[move.target] for move in thier_capturing_moves ]
 
     for piece in threatened_pieces:
-        escape_moves = piece.get_moves(board) 
+        escape_moves = piece.get_moves() 
         for move in escape_moves:
             if move.capture is not None:
                 return move

@@ -49,7 +49,7 @@ class Board(object):
     def in_danger(self, location, color):
         enemy_pieces = self.get_pieces(other_color(color))
         for piece in enemy_pieces:
-            moves, captures = piece.gen_moves(self)
+            moves, captures = piece.gen_moves()
             for capture_move in captures:
                 if capture_move.target == location:
                     return True
@@ -125,9 +125,9 @@ class Board(object):
             if move.target[1] in {0, 7}:
                 self[move.origin] = None
                 if move.promote == "knight":
-                    self[move.target] = Knight(move.color)
+                    self[move.target] = Knight(self,move.color)
                 else:
-                    self[move.target] = Queen(move.color)
+                    self[move.target] = Queen(self,move.color)
                 return
 
         # basic move handling
@@ -164,8 +164,8 @@ class Board(object):
 
     def setup(self):
         for x in range(8):
-            self[x, 1] = Pawn("white")
-            self[x, 6] = Pawn("black")
+            self[x, 1] = Pawn(self,"white")
+            self[x, 6] = Pawn(self,"black")
 
         for color in ["white", "black"]:
             if color == "white":
@@ -173,17 +173,17 @@ class Board(object):
             elif color == "black":
                 y = 7
 
-            self[0, y] = Rook(color)
-            self[7, y] = Rook(color)
+            self[0, y] = Rook(self,color)
+            self[7, y] = Rook(self,color)
 
-            self[1, y] = Knight(color)
-            self[6, y] = Knight(color)
+            self[1, y] = Knight(self,color)
+            self[6, y] = Knight(self,color)
 
-            self[2, y] = Bishop(color)
-            self[5, y] = Bishop(color)
+            self[2, y] = Bishop(self,color)
+            self[5, y] = Bishop(self,color)
 
-            self[3, y] = Queen(color)
-            self[4, y] = King(color)
+            self[3, y] = Queen(self,color)
+            self[4, y] = King(self,color)
 
     def clear_line(self, n=21):
         LINE_UP = "\033[1A"
@@ -195,7 +195,7 @@ class Board(object):
         all_moves = []
         pieces = self.get_pieces(color)
         for piece in pieces:
-            all_moves.extend(piece.get_moves(self))
+            all_moves.extend(piece.get_moves())
         return all_moves
 
     # printing the board onscreen
