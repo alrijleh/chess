@@ -71,15 +71,21 @@ class Board(object):
     def move_is_legal(self, move, color):
         moved_piece = self[move.origin]
         if moved_piece is None:
+            print("no piece found")
             return False
         piece_color = moved_piece.color
         if color != piece_color:
+            print("moving enemy piece")
             return False
         is_legal = False
         for possible_move in self.possible_moves(color):
             if move.origin == possible_move.origin and move.target == possible_move.target:
                 is_legal = True
-        return is_legal
+        if is_legal:
+            return True
+        else:
+            print("requested move not legal")
+            return False
 
     def play_move(self, move, color):
         moved_piece = self[move.origin]
@@ -87,6 +93,8 @@ class Board(object):
 
         if not self.move_is_legal(move, color):
             print("illegal move bucko")
+            print(f"{color} tried {move}")
+            print(self.possible_moves(color))
             exit(-1)
 
         move.capture = self[move.target]
@@ -146,7 +154,6 @@ class Board(object):
 
     def in_checkmate(self, color):
         if self.in_check(color):
-            pieces = self.get_pieces(color)
             if self.possible_moves(color):
                 return False
             print("get rekt " + color)

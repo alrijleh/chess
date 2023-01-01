@@ -12,7 +12,6 @@ class Piece(object):
         self.moved = False  # if piece has ever been moved
         self.en_passant_ready = False
         self.unicode_str = None
-        self.value = 0
 
     def __str__(self):
         color_letter = self.color[0]
@@ -72,7 +71,6 @@ class Rook(Piece):
     def __init__(self, board, color):
         super().__init__(board,color)
         self.type_letter = "R"
-        self.value = 5
         self.unicode_str = f"{other_color(color).upper()} CHESS ROOK"
 
     def gen_moves(self):
@@ -108,7 +106,6 @@ class Pawn(Piece):
     def __init__(self, board,color):
         super().__init__(board,color)
         self.type_letter = "P"
-        self.value = 1
         self.unicode_str = f"{other_color(color).upper()} CHESS PAWN"
 
     def gen_moves(self):
@@ -160,7 +157,6 @@ class Bishop(Piece):
     def __init__(self, board,color):
         super().__init__(board,color)
         self.type_letter = "B"
-        self.value = 3
         self.unicode_str = f"{other_color(color).upper()} CHESS BISHOP"
 
     def gen_moves(self):
@@ -195,7 +191,6 @@ class Queen(Piece):
     def __init__(self, board,color):
         super().__init__(board,color)
         self.type_letter = "Q"
-        self.value = 10
         self.unicode_str = f"{other_color(color).upper()} CHESS QUEEN"
 
     def gen_moves(self):
@@ -232,7 +227,6 @@ class Knight(Piece):
     def __init__(self, board,color):
         super().__init__(board,color)
         self.type_letter = "N"
-        self.value = 3
         self.unicode_str = f"{other_color(color).upper()} CHESS KNIGHT"
 
     def gen_moves(self):

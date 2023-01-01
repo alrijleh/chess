@@ -1,12 +1,9 @@
-# engine.py
-# contains implementation of the game
-
-import time
+#call this file to run the game
 
 from board import Board
-from pieces import King, Queen, Rook, Bishop, Knight, Pawn
 from utils import other_color
 
+#bots
 from bots.randombot.randombot import *
 from bots.bot_fouad import fouad_bot
 from simpbot import simpbot
