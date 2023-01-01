@@ -17,11 +17,12 @@ def run_game():
     color = "white"
     while not board.in_checkmate(color) and not board.in_stalemate(color):
         if color == "white":
-            move = randombot2(board, color)
+            move = randombot(board, color)
         elif color == "black":
             move = fouad_bot(board, color)
         move.color = color
         board.play_move(move, color)
+        #input()
         print(board)
         color = other_color(color)
 

@@ -49,7 +49,7 @@ class Board(object):
     def in_danger(self, location, color):
         enemy_pieces = self.get_pieces(other_color(color))
         for piece in enemy_pieces:
-            moves, captures = piece.gen_moves()
+            moves, captures = piece.gen_moves(self)
             for capture_move in captures:
                 if capture_move.target == location:
                     return True
@@ -131,6 +131,8 @@ class Board(object):
         # pawn promotion
         if isinstance(moved_piece, Pawn):
             if move.target[1] in {0, 7}:
+                print(self)
+                print("test")
                 self[move.origin] = None
                 if move.promote == "knight":
                     self[move.target] = Knight(self,move.color)
@@ -202,7 +204,7 @@ class Board(object):
         all_moves = []
         pieces = self.get_pieces(color)
         for piece in pieces:
-            all_moves.extend(piece.get_moves())
+            all_moves.extend(piece.get_moves(self))
         return all_moves
 
     # printing the board onscreen

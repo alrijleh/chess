@@ -21,24 +21,24 @@ class Piece(object):
     def __repr__(self):
         return self.__str__()
 
-    # return all legal mvoes of a piece
-    def get_moves(self):
+        # return all legal mvoes of a piece
+    def get_moves(self, board):
         safe_moves = []
-        all_movements, all_captures = self.gen_moves()
+        all_movements, all_captures = self.gen_moves(board)
         all_moves = all_movements + all_captures
 
         for move in all_moves:
-            self.board.try_move(move)
-            if not self.board.in_check(self.color):
-                safe_moves.append(move)
-            self.board.undo_move(move)
-
-            if self.board.is_castle(move):
+            if board.is_castle(move):
                 for column in range(move.origin[0], move.target[0]):
                     row = move.origin[1]
-                    color = self.board[move.origin].color
-                    if not self.board.in_danger([column, row], color):
+                    color = board[move.origin].color
+                    if not board.in_danger([column, row], color):
                         safe_moves.append(move)
+            else : 
+                board.try_move(move)
+                if not board.in_check(self.color):
+                    safe_moves.append(move)
+                board.undo_move(move)
         return safe_moves
 
 
@@ -73,8 +73,8 @@ class Rook(Piece):
         self.type_letter = "R"
         self.unicode_str = f"{other_color(color).upper()} CHESS ROOK"
 
-    def gen_moves(self):
-        location = self.board.get_location(self)
+    def gen_moves(self, board):
+        location = board.get_location(self)
         moves = []
         captures = []
         for y_offset in [-1, 0, 1]:
@@ -87,7 +87,7 @@ class Rook(Piece):
                         and new_location[1] >= 0
                         and new_location[1] < 8
                     ):
-                        target = self.board[new_location]
+                        target = board[new_location]
                         if target is None:
                             moves.append(Move(location, new_location))
                         elif target.color != self.color:
@@ -108,8 +108,8 @@ class Pawn(Piece):
         self.type_letter = "P"
         self.unicode_str = f"{other_color(color).upper()} CHESS PAWN"
 
-    def gen_moves(self):
-        location = self.board.get_location(self)
+    def gen_moves(self, board):
+        location = board.get_location(self)
         moves = []
         captures = []
         if self.color == "white":
@@ -119,14 +119,14 @@ class Pawn(Piece):
 
         # walk forwards
         step_location = [location[0], location[1] + 1 * direction]
-        if self.board[step_location] == None:
+        if board[step_location] == None:
             moves.append(Move(location, step_location))
         # two spaces from initial location
         step2_location = [location[0], location[1] + 2 * direction]
         if (
             not self.moved
-            and self.board[step_location] is None
-            and self.board[step2_location] is None
+            and board[step_location] is None
+            and board[step2_location] is None
         ):
             moves.append(Move(location, step2_location))
         # diagonal attacks
@@ -134,13 +134,13 @@ class Pawn(Piece):
         en_passant_victim_loc = {}
         for i in [-1, 1]:
             diagonal[i] = [location[0] + 1 * i, location[1] + 1 * direction]
-            target = self.board[diagonal[i]]
+            target = board[diagonal[i]]
             if target is not None:
                 if target.color != self.color:
                     captures.append(Move(location, diagonal[i], target))
             # en passant
             en_passant_victim_loc[i] = [location[0] + 1 * i, location[1]]
-            target = self.board[en_passant_victim_loc[i]]
+            target = board[en_passant_victim_loc[i]]
             if target is not None:
                 if (
                     target.color != self.color
@@ -159,8 +159,8 @@ class Bishop(Piece):
         self.type_letter = "B"
         self.unicode_str = f"{other_color(color).upper()} CHESS BISHOP"
 
-    def gen_moves(self):
-        location = self.board.get_location(self)
+    def gen_moves(self, board):
+        location = board.get_location(self)
         moves = []
         captures = []
         for y_offset in [-1, 1]:
@@ -172,7 +172,7 @@ class Bishop(Piece):
                     and new_location[1] >= 0
                     and new_location[1] < 8
                 ):
-                    target = self.board[new_location]
+                    target = board[new_location]
                     if target is None:
                         moves.append(Move(location, new_location))
                     elif target.color != self.color:
@@ -193,8 +193,8 @@ class Queen(Piece):
         self.type_letter = "Q"
         self.unicode_str = f"{other_color(color).upper()} CHESS QUEEN"
 
-    def gen_moves(self):
-        location = self.board.get_location(self)
+    def gen_moves(self, board):
+        location = board.get_location(self)
         moves = []
         captures = []
         for y_offset in [-1, 0, 1]:
@@ -208,7 +208,7 @@ class Queen(Piece):
                 ):
                     if x_offset == 0 and y_offset == 0:
                         break
-                    target = self.board[new_location[0], new_location[1]]
+                    target = board[new_location[0], new_location[1]]
                     if target is None:
                         moves.append(Move(location, new_location))
                     elif target.color != self.color:
@@ -229,8 +229,8 @@ class Knight(Piece):
         self.type_letter = "N"
         self.unicode_str = f"{other_color(color).upper()} CHESS KNIGHT"
 
-    def gen_moves(self):
-        location = self.board.get_location(self)
+    def gen_moves(self, board):
+        location = board.get_location(self)
         moves = []
         captures = []
         for y_offset in [-2, -1, 1, 2]:
@@ -243,7 +243,7 @@ class Knight(Piece):
                         and new_location[1] >= 0
                         and new_location[1] < 8
                     ):
-                        target = self.board[new_location]
+                        target = board[new_location]
                         if target is None:
                             moves.append(Move(location, new_location))
                         elif target.color != self.color:
@@ -257,8 +257,8 @@ class King(Piece):
         self.type_letter = "K"
         self.unicode_str = f"{other_color(color).upper()} CHESS KING"
 
-    def gen_moves(self):
-        location = self.board.get_location(self)
+    def gen_moves(self, board):
+        location = board.get_location(self)
         moves = []
         captures = []
         for y_offset in [-1, 0, 1]:
@@ -270,7 +270,7 @@ class King(Piece):
                     and new_location[1] >= 0
                     and new_location[1] < 8
                 ):
-                    target = self.board[new_location]
+                    target = board[new_location]
                     if target is None:
                         moves.append(Move(location, new_location))
                     elif target.color != self.color:
@@ -280,20 +280,20 @@ class King(Piece):
             row = location[1]
             row_ahead = row + 1 if self.color == "white" else row - 1
             # right
-            if self.board[7, row] is not None:
+            if board[7, row] is not None:
                 if (
-                    self.board[7, row].moved is False
-                    and self.board[5, row] is None
-                    and self.board[6, row] is None
+                    board[7, row].moved is False
+                    and board[5, row] is None
+                    and board[6, row] is None
                 ):
                     moves.append(Move(location, [6, row]))
             # left
-            if self.board[0, row] is not None:
+            if board[0, row] is not None:
                 if (
-                    self.board[0, row].moved is False
-                    and self.board[1, row] is None
-                    and self.board[2, row] is None
-                    and self.board[3, row] is None
+                    board[0, row].moved is False
+                    and board[1, row] is None
+                    and board[2, row] is None
+                    and board[3, row] is None
                 ):
                     moves.append(Move(location, [2, row]))
         return moves, captures
