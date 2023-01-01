@@ -204,7 +204,7 @@ class Board(object):
         all_moves = []
         pieces = self.get_pieces(color)
         for piece in pieces:
-            all_moves.extend(piece.get_moves())
+            all_moves.extend(piece.get_moves(self))
         return all_moves
 
     # printing the board onscreen
