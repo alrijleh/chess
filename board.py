@@ -49,7 +49,7 @@ class Board(object):
     def in_danger(self, location, color):
         enemy_pieces = self.get_pieces(other_color(color))
         for piece in enemy_pieces:
-            moves, captures = piece.gen_moves(self)
+            moves, captures = piece.gen_moves()
             for capture_move in captures:
                 if capture_move.target == location:
                     return True
@@ -204,7 +204,7 @@ class Board(object):
         all_moves = []
         pieces = self.get_pieces(color)
         for piece in pieces:
-            all_moves.extend(piece.get_moves(self))
+            all_moves.extend(piece.get_moves())
         return all_moves
 
     # printing the board onscreen
