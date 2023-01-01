@@ -1,13 +1,11 @@
-# engine.py
-# contains implementation of the game
-
-import time
+#call this file to run the game
 
 from board import Board
-from pieces import King, Queen, Rook, Bishop, Knight, Pawn
 from utils import other_color
 
+#bots
 from bots.randombot.randombot import *
+from bots.bot_fouad import fouad_bot
 from simpbot import simpbot
 
 
@@ -21,16 +19,17 @@ def run_game():
         if color == "white":
             move = simpbot(board, color)
         elif color == "black":
-            move = randombot_plus(board, color)
+            move = fouad_bot(board, color)
         move.color = color
         board.play_move(move, color)
+        #input()
         print(board)
-        # input()
         color = other_color(color)
 
     if not board.in_stalemate(color):
         return other_color(color)
     else:
+        print("you both suck")
         return None
 
 

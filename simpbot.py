@@ -23,7 +23,7 @@ def simpbot(board, color):
     her_locs = []
     for piece in her_pieces:
         if isinstance(piece, Queen):
-            her_moves.extend(piece.get_moves())
+            her_moves.extend(piece.get_moves(board))
             her_locs.append(board.get_location(piece))
 
     if not her_moves:
