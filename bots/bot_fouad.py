@@ -110,5 +110,5 @@ def fouad_bot(true_board,color):
         print(move)
         exit()
 
-    move.message = f"material gain: {move.material_gain}, number of enemy responses: {move.enemy_possible_move_count}"
+    move.message = f"material gain: {move.material_gain}, number of viable moves: {len(moves)}"
     return move

@@ -29,11 +29,14 @@ class Piece(object):
 
         for move in all_moves:
             if board.is_castle(move):
+                king_in_check = False
                 for column in range(move.origin[0], move.target[0]):
                     row = move.origin[1]
                     color = board[move.origin].color
-                    if not board.in_danger([column, row], color):
-                        safe_moves.append(move)
+                    if board.in_danger([column, row], color):
+                        king_in_check = True
+                if not king_in_check:
+                    safe_moves.append(move)
             else : 
                 board.try_move(move)
                 if not board.in_check(self.color):
