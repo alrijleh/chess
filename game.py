@@ -9,12 +9,16 @@ from bots.randombot.randombot import *
 from bots.bot_fouad import fouad_bot
 from simpbot import simpbot
 from bots.date_bot.date_bot import date_bot
+from bots.odd_bot.odd_bot import odd_bot
+from bots.forward_bot.forward_bot import forward_bot
 
 bot_list = {
     'simpbot': simpbot,
     'fouad_bot': fouad_bot,
     'randombot': randombot,
-    'date_bot': date_bot
+    'date_bot': date_bot,
+    'odd_bot': odd_bot,
+    'forward_bot': forward_bot
 }
 
 
